@@ -1,0 +1,15 @@
+# Binaries
+*.exe
+/bin/
+
+# Test and profiling output
+coverage.out
+*.test
+*.prof
+
+# Editor
+.vscode/
+.idea/
+
+# Note: testdata/fuzz/ is NOT ignored; commit failing fuzz inputs as regression tests.
+Go Mastery Roadmap.md

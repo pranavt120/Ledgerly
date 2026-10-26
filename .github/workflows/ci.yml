@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - uses: golangci/golangci-lint-action@v8
+        with:
+          version: latest
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - run: go build ./...
+      - run: go vet ./...
+      - run: go test -race -coverprofile=coverage.out ./...
+      - name: Coverage gate (85%)
+        run: |
+          # A profile with only the "mode:" header means no code yet; nothing to gate.
+          if [ "$(wc -l < coverage.out)" -le 1 ]; then
+            echo "No statements yet; skipping coverage gate."
+            exit 0
+          fi
+          total=$(go tool cover -func=coverage.out | awk '/^total:/ {sub("%","",$3); print $3}')
+          echo "Total coverage: ${total}%"
+          awk -v t="$total" 'BEGIN { exit (t < 85) }' || { echo "Coverage below 85%"; exit 1; }

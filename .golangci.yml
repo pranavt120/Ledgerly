@@ -1,0 +1,17 @@
+version: "2"
+
+linters:
+  default: standard # errcheck, govet, ineffassign, staticcheck, unused
+  enable:
+    - errorlint # catches == on wrapped errors; use errors.Is/As
+    - gocritic
+    - gosec
+    - misspell
+    - revive # exported identifiers need doc comments
+    - unconvert
+    - unparam
+
+formatters:
+  enable:
+    - gofumpt
+    - goimports
